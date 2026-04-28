@@ -20,7 +20,7 @@ public class PrecoScheduler {
     @Scheduled(fixedRate = 60000) // executa a cada 60 segundos
     public void verificarPrecos() {
         monitoramentoRepository.findAll().forEach(item -> {
-            rabbitTemplate.convertAndSend("precoQueue", item.getUrl()); // envia a URL para a fila do RabbitMQ
+            rabbitTemplate.convertAndSend("fila_precos", item.getId()); // envia o ID para a fila do RabbitMQ
         });
     }
 }

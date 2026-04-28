@@ -21,7 +21,7 @@ public class PrecoWorker {
 
     @Autowired // api do spring para enviar email
     private JavaMailSender javaMailSender;
-
+// sudo docker exec -it pg-financeiro psql -U root -d db_financeiro
 
     @RabbitListener(queues = "fila_precos")
     public void processarMonitoramentoPreco(Long id) {
@@ -34,20 +34,25 @@ public class PrecoWorker {
                 .header("Accept-Language", "pt-BR,pt;q=0.9")
                 .get();
 
-                String precoTexto = doc.select("span.a-offscreen").first().text(); // pega a tag
+                System.out.println("-----> Título recebido da Amazon: " + doc.title());
+                org.jsoup.nodes.Element elementoPreco = doc.select("span.a-offscreen").first();
 
-                if (precoTexto != null && !precoTexto.isEmpty()){
-                    // limpa o texto-- remove "R$", espaços, pontos de milhar e troca a vírgula por ponto
-                    String limpo = precoTexto.replaceAll("[^0-9,]", "").replace(",", ".");
-                    Double precoAtual = Double.parseDouble(limpo);
+                if (elementoPreco != null) {
+                    String precoTexto = elementoPreco.text();
 
-                    System.out.println("Produto: " + id + " | Preço na Amazon: " + precoAtual);
+                    if (!precoTexto.isEmpty()){
+                        // limpa o texto-- remove "R$", espaços, pontos de milhar e troca a vírgula por ponto
+                        String limpo = precoTexto.replaceAll("[^0-9,]", "").replace(",", ".");
+                        Double precoAtual = Double.parseDouble(limpo);
 
-                    if (precoAtual <= item.getPrecoAlvo()) {
-                        enviarEmail(item, precoAtual); // caso o preco atual seja menor ou igual ao preço alvo, envia email para o usuário
+                        System.out.println("Produto: " + id + " | Preço na Amazon: " + precoAtual);
+
+                        if (precoAtual <= item.getPrecoAlvo()) {
+                            enviarEmail(item, precoAtual); // caso o preco atual seja menor ou igual ao preço alvo, envia email para o usuário
+                        }
                     }
-                    
-
+                } else {
+                    System.out.println("Produto: " + id + " | O Jsoup foi bloqueado pela Amazon (Captcha) ou o produto está indisponível.");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
