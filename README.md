@@ -96,5 +96,4 @@ mvn spring-boot:run
 ## ⚠️ Observações sobre o Web Scraping
 A Amazon possui mecanismos robustos de proteção contra bots e acessos automatizados (como o bloqueio via Captcha). O projeto utiliza headers HTTP (como `User-Agent` e `Accept-Language`) para mimetizar um navegador real. Entretanto, caso a Amazon bloqueie a requisição, o sistema tratará a exceção e emitirá um aviso no console de que o produto está indisponível ou que o Jsoup foi bloqueado.Alguns momentos aparecerá o preço de cada item mas em outros o Amazon bloqueia.
 
-## 📄 Licença
-Este projeto está sob a licença **MIT**. Sinta-se livre para usar, estudar e colaborar!
+# É isso, bjao 
